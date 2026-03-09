@@ -1,22 +1,25 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { AuthContext, AuthProvider } from "../context/AuthContext";
+import { CarrinhoProvider } from "../context/CarrinhoContext";
 
 import AuthStack from "./AuthStack";
 import AppTabs from "./AppTabs";
-import { CarrinhoProvider } from "../context/CarrinhoContext";
 
-const Stack = createNativeStackNavigator();
+function Routes() {
+  const { isAuthenticated } = useContext(AuthContext);
+
+  return isAuthenticated ? <AppTabs /> : <AuthStack />;
+}
 
 export default function Router() {
   return (
-    <CarrinhoProvider>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Auth" component={AuthStack} />
-          <Stack.Screen name="Main" component={AppTabs} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </CarrinhoProvider>
+    <AuthProvider>
+      <CarrinhoProvider>
+        <NavigationContainer>
+          <Routes />
+        </NavigationContainer>
+      </CarrinhoProvider>
+    </AuthProvider>
   );
 }

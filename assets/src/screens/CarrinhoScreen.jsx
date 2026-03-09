@@ -6,18 +6,24 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
+
 import BotaoCustom from "../components/BotaoCustom";
 import { CarrinhoContext } from "../context/CarrinhoContext";
+import { formatCurrency } from "../utils/formatCurrency";
+import { theme } from "../styles/theme";
 
 export default function CarrinhoScreen({ navigation }) {
-  const { itens, remover, limpar, total } = useContext(CarrinhoContext);
+  const { itens, remover, limpar, subtotal, totalComEntrega } =
+    useContext(CarrinhoContext);
 
   if (itens.length === 0) {
     return (
       <View style={styles.containerVazio}>
-        <Text style={styles.textoVazio}>Seu carrinho está vazio 🛒</Text>
+        <Text style={styles.textoVazio}>
+          Seu carrinho está vazio 🛒
+        </Text>
 
-        <View style={styles.areaBotao}>
+        <View style={styles.fullWidth}>
           <BotaoCustom
             titulo="Continuar Comprando"
             onPress={() => navigation.navigate("HomeTab")}
@@ -34,20 +40,16 @@ export default function CarrinhoScreen({ navigation }) {
       <FlatList
         data={itens}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{ paddingBottom: 16 }}
+        contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
           <View style={styles.item}>
             <Text style={styles.emoji}>{item.imagem}</Text>
 
-            <View style={{ flex: 1 }}>
+            <View style={styles.infoContainer}>
               <Text style={styles.nome}>{item.nome}</Text>
 
               <Text style={styles.info}>
-                {item.preco.toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}{" "}
-                • Qtde: {item.quantidade}
+                {formatCurrency(item.preco)} • Qtde: {item.quantidade}
               </Text>
             </View>
 
@@ -59,15 +61,15 @@ export default function CarrinhoScreen({ navigation }) {
       />
 
       <View style={styles.footer}>
-        <Text style={styles.total}>
-          Total:{" "}
-          {total().toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}
+        <Text style={styles.subtotal}>
+          Subtotal: {formatCurrency(subtotal)}
         </Text>
 
-        <View style={{ height: 10 }} />
+        <Text style={styles.total}>
+          Total com entrega: {formatCurrency(totalComEntrega)}
+        </Text>
+
+        <View style={styles.spacing} />
 
         <BotaoCustom
           titulo="Continuar Comprando"
@@ -75,7 +77,7 @@ export default function CarrinhoScreen({ navigation }) {
           variante="secundario"
         />
 
-        <View style={{ height: 10 }} />
+        <View style={styles.spacing} />
 
         <BotaoCustom
           titulo="Limpar Carrinho"
@@ -93,18 +95,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
   },
+
   textoVazio: {
     fontSize: 18,
     fontWeight: "700",
     marginBottom: 20,
   },
-  areaBotao: {
+
+  fullWidth: {
     width: "100%",
   },
 
   container: {
     flex: 1,
-    backgroundColor: "#f7f7f7",
+    backgroundColor: theme.colors.background,
     padding: 16,
   },
 
@@ -114,6 +118,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 
+  listContent: {
+    paddingBottom: 16,
+  },
+
   item: {
     backgroundColor: "#fff",
     borderRadius: 12,
@@ -121,12 +129,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
-    elevation: 2,
+    elevation: 3,
   },
 
   emoji: {
     fontSize: 24,
     marginRight: 12,
+  },
+
+  infoContainer: {
+    flex: 1,
   },
 
   nome: {
@@ -141,7 +153,7 @@ const styles = StyleSheet.create({
   },
 
   remover: {
-    color: "#ff4d88",
+    color: theme.colors.primary,
     fontWeight: "800",
   },
 
@@ -149,10 +161,20 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 
+  subtotal: {
+    fontSize: 16,
+    fontWeight: "700",
+    textAlign: "right",
+  },
+
   total: {
     fontSize: 18,
     fontWeight: "900",
     textAlign: "right",
+    marginTop: 4,
+  },
+
+  spacing: {
+    height: 10,
   },
 });
-

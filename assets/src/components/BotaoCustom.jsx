@@ -1,18 +1,34 @@
 import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
-export default function BotaoCustom({ titulo, onPress, variante = "primario" }) {
+export default function BotaoCustom({
+  titulo,
+  onPress,
+  variante = "primario",
+  style,
+  textStyle,
+  disabled = false,
+}) {
+  const isSecundario = variante === "secundario";
+
   return (
     <TouchableOpacity
       onPress={onPress}
+      activeOpacity={0.8}
+      disabled={disabled}
       style={[
         styles.botao,
-        variante === "secundario" && styles.secundario,
+        isSecundario && styles.secundario,
+        disabled && styles.disabled,
+        style,
       ]}
-      activeOpacity={0.8}
     >
       <Text
-        style={[styles.texto, variante === "secundario" && styles.textoSec]}
+        style={[
+          styles.texto,
+          isSecundario && styles.textoSec,
+          textStyle,
+        ]}
       >
         {titulo}
       </Text>
@@ -39,5 +55,8 @@ const styles = StyleSheet.create({
   },
   textoSec: {
     color: "#ff4d88",
+  },
+  disabled: {
+    opacity: 0.6,
   },
 });
